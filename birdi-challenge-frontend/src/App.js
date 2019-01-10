@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import axios from 'axios';
 
 class App extends Component {
   constructor() {
@@ -20,9 +21,15 @@ class App extends Component {
   }
 
   handleSubmit = event => {
-    event.prevent.default();
+    event.preventDefault();
+
     const {lat, lng} = this.state;
-    console.log(lat, lng);
+
+    axios.get(`http://www.localhost:3000/weather/${lat}/${lng}`)
+    .then(response => {
+      console.log(response);
+    })
+    .catch(console.warn);
   }
 
   render() {
