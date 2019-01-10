@@ -6,6 +6,11 @@ const db = require('../db');
 
 router.get('/', (request, response) => response.json({ status: "ok" }));
 
+router.get('/weather/:lat/:lng', (request, response) => {
+  console.log(request.params);
+  response.send('HI!');
+});
+
 router.get('/weather', (request, response, next) => {
   db.query('SELECT * FROM weather', (error, result) => {
     if (error) {
