@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+// require database adapter file
 const db = require('../db');
 
 router.get('/', (request, response) => response.json({ status: "ok" }));
