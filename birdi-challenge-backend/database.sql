@@ -3,11 +3,6 @@ CREATE DATABASE birdi_challenge;
 
 \c birdi_challenge;
 
--- CREATE TABLE location (
---   lat DECIMAL NOT NULL,
---   lng DECIMAL NOT NULL,
---   PRIMARY KEY (lat, lng)
--- );
 
 CREATE TABLE location (
   location_id SERIAL PRIMARY KEY,
@@ -22,15 +17,6 @@ INSERT INTO location (lat, lng)
     (-33.798178, 151.184079),
     (22.327331, 114.171973);
 
--- CREATE TABLE weather (
---   report_id SERIAL PRIMARY KEY,
---   location_id INTEGER REFERENCES location (location_id),
---   temp DECIMAL,
---   wind_speed DECIMAL,
---   chance_of_rain INTEGER,
---   description VARCHAR(100),
---   created_at TIMESTAMP
--- );
 
 CREATE TABLE weather (
   report_id SERIAL PRIMARY KEY,
@@ -42,8 +28,19 @@ CREATE TABLE weather (
   created_at TIMESTAMP
 );
 
--- INSERT INTO weather (location_id, temp, wind_speed, chance_of_rain, description, created_at)
---   VALUES
---     (1, 22.5, 15.2, 75, 'showers', current_timestamp),
---     (2, 25.5, 13.8, 68, 'cloudy', current_timestamp),
---     (3, 21.2, 16.6, 88, 'showers', current_timestamp);
+
+CREATE TABLE aircraft (
+  aircraft_id SERIAL PRIMARY KEY,
+  location_id INTEGER REFERENCES location (location_id),
+  name VARCHAR(50),
+  model VARCHAR(20),
+  pilot VARCHAR(50),
+  max_flight_time INTEGER,
+  max_flight_range INTEGER
+);
+
+INSERT INTO aircraft (location_id, name, model, pilot, max_flight_time, max_flight_range)
+  VALUES
+    (1, 'DJI Mavic Air Drone', 'DJIMVCAIR-R', 'Homer Simpson', 59, 45),
+    (1, 'DJI Inspire 2 RTF ', 'DJIINSPIRE2', 'Marge Simpson', 27, 30),
+    (2, 'Immersion RC Vortex 250', 'BLH9250', 'Ned Flanders', 45, 40);

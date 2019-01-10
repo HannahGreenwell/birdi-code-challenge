@@ -26,6 +26,7 @@ router.get('/weather/:lat/:lng', (request, response) => {
     const created_at = new Date();
 
     // select the corresponding location record
+    // NOTE: this needs a check for locations not in the database
     db.query('SELECT location_id FROM location WHERE lat = $1 AND lng = $2', [lat, lng])
     .then(result => {
       const location_id = result.rows[0].location_id;
@@ -48,6 +49,18 @@ router.get('/weather/:lat/:lng/history', (request, response) => {
 
   db.query(
     'SELECT * FROM weather INNER JOIN location ON location.location_id = weather.location_id WHERE lat = $1 AND lng = $2',
+    [lat, lng]
+  )
+  .then(result => response.send(result.rows))
+  .catch(error => setImmediate(() => { throw error}));
+});
+
+// get request for all aircrafts at a given location
+// NOTE: need to change this to find all aircrafts within 100kms of a given location
+router.get('/aircraft/:lat/:lng', (request, response) => {
+
+  db.query(
+    'SELECT * FROM aircraft INNER JOIN location ON location.location_id = aircraft.location_id WHERE lat = $1 AND lng = $2',
     [lat, lng]
   )
   .then(result => response.send(result.rows))
