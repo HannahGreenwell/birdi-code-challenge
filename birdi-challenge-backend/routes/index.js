@@ -66,7 +66,11 @@ router.get('/aircraft/:lat/:lng', (request, response) => {
     'SELECT * FROM aircraft INNER JOIN location ON location.location_id = aircraft.location_id WHERE lat = $1 AND lng = $2',
     [lat, lng]
   )
-  .then(result => response.send(result.rows))
+  .then(result => {
+    console.log(result.rows);
+
+    response.send(result.rows);
+  })
   .catch(error => setImmediate(() => { throw error}));
 });
 
