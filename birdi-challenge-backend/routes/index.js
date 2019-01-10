@@ -17,6 +17,8 @@ router.get('/weather/:lat/:lng', (request, response) => {
   const { lat, lng } = request.params;
   const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
+  console.log(request.params);
+
   // makes a get request to the Open Weather api for the current weather
   axios.get(`${BASE_URL}/weather?lat=${lat}&lon=${lng}&units=metric&appid=${API_KEY}`)
   .then(res => {
@@ -58,6 +60,7 @@ router.get('/weather/:lat/:lng/history', (request, response) => {
 // get request for all aircrafts at a given location
 // NOTE: need to change this to find all aircrafts within 100kms of a given location
 router.get('/aircraft/:lat/:lng', (request, response) => {
+  const { lat, lng } = request.params;
 
   db.query(
     'SELECT * FROM aircraft INNER JOIN location ON location.location_id = aircraft.location_id WHERE lat = $1 AND lng = $2',

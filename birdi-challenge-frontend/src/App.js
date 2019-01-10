@@ -45,6 +45,8 @@ class App extends Component {
 
         <LocationSearchForm onSubmit={this.handleSubmit} />
 
+        <p>(Test coordinates: -33.886249, 151.200251)</p>
+
         <WeatherDetails weather={weather} />
 
         <AircraftDetails aircraft={aircraft} />
