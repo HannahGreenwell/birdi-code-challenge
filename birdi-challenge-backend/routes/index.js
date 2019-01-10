@@ -12,35 +12,46 @@ dotenv.config();
 const API_KEY = process.env.OPEN_WEATHER_API;
 
 
-// get request for the current weather
-router.get('/weather/:lat/:lng', (request, response, next) => {
+// get request a location's current weather
+router.get('/weather/:lat/:lng', (request, response) => {
   const { lat, lng } = request.params;
   const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
   // makes a get request to the Open Weather api for the current weather
   axios.get(`${BASE_URL}/weather?lat=${lat}&lon=${lng}&units=metric&appid=${API_KEY}`)
   .then(res => {
-    const description = res.data.weather.description;
+    const description = res.data.weather[0].description;
     const temp = res.data.main.temp;
     const wind_speed = res.data.wind.speed;
     const created_at = new Date();
 
-    // stores the weather data returned from the api request to the local database
-    db.query(
-      'INSERT INTO weather (lat, lng, description, temp, wind_speed, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [lat, lng, description, temp, wind_speed, created_at],
-      (error, result) => {
-        if (error) {
-          return next(error);
-        }
+    // select the corresponding location record
+    db.query('SELECT location_id FROM location WHERE lat = $1 AND lng = $2', [lat, lng])
+    .then(result => {
+      const location_id = result.rows[0].location_id;
 
-        response.send(result.rows[0]);
-      }
-    );
+      // store the weather data returned from the api request to the local database
+      db.query(
+        'INSERT INTO weather (location_id, description, temp, wind_speed, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [location_id, description, temp, wind_speed, created_at])
+      .then(result => response.send(result.rows[0]))
+      .catch(error => setImmediate(() => { throw error }));
+    });
   })
-  .catch(error => {
-    console.log(error);
-  });
+  .catch(error => setImmediate(() => { throw error }));
+});
+
+
+// get request for a location's historical weather (i.e. all corresponding weather records)
+router.get('/weather/:lat/:lng/history', (request, response) => {
+  const { lat, lng } = request.params;
+
+  db.query(
+    'SELECT * FROM weather INNER JOIN location ON location.location_id = weather.location_id WHERE lat = $1 AND lng = $2',
+    [lat, lng]
+  )
+  .then(result => response.send(result.rows))
+  .catch(error => setImmediate(() => { throw error}));
 });
 
 module.exports = router;

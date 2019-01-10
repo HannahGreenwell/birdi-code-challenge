@@ -4,15 +4,15 @@ CREATE DATABASE birdi_challenge;
 \c birdi_challenge;
 
 -- CREATE TABLE location (
---   location_id SERIAL PRIMARY KEY,
 --   lat DECIMAL NOT NULL,
---   lng DECIMAL NOT NULL
+--   lng DECIMAL NOT NULL,
+--   PRIMARY KEY (lat, lng)
 -- );
 
 CREATE TABLE location (
+  location_id SERIAL PRIMARY KEY,
   lat DECIMAL NOT NULL,
-  lng DECIMAL NOT NULL,
-  PRIMARY KEY (lat, lng)
+  lng DECIMAL NOT NULL
 );
 
 INSERT INTO location (lat, lng)
@@ -34,13 +34,12 @@ INSERT INTO location (lat, lng)
 
 CREATE TABLE weather (
   report_id SERIAL PRIMARY KEY,
-  lat DECIMAL,
-  lng DECIMAL,
+  location_id INTEGER REFERENCES location (location_id),
   description VARCHAR(100),
   temp DECIMAL,
   wind_speed DECIMAL,
-  created_at TIMESTAMP,
-  FOREIGN KEY (lat, lng) REFERENCES location (lat, lng)
+  chance_of_rain INTEGER,
+  created_at TIMESTAMP
 );
 
 -- INSERT INTO weather (location_id, temp, wind_speed, chance_of_rain, description, created_at)
