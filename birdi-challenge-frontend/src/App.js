@@ -2,68 +2,52 @@ import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
 
+import LocationSearchForm from './components/LocationSearchForm';
+import WeatherDetails from './components/WeatherDetails';
+import AircraftDetails from './components/AircraftDetails';
+
 class App extends Component {
   constructor() {
     super();
 
     this.state = {
-      lat: '',
-      lng: ''
+      weather: {},
+      aircraft: []
     };
   }
 
-  handleChange = event => {
-    const {name, value} = event.target;
-
-    this.setState({
-      [name]: value
-    });
-  }
-
-  handleSubmit = event => {
-    event.preventDefault();
-
-    const {lat, lng} = this.state;
-
-    axios.get(`http://www.localhost:3000/weather/${lat}/${lng}`)
+  handleSubmit = (lat, lng) => {
+    const BASE_URL = 'http://www.localhost:3000';
+    axios.get(`${BASE_URL}/weather/${lat}/${lng}`)
     .then(response => {
-      console.log(response);
+      this.setState({
+        weather: response.data
+      });
+    })
+    .catch(console.warn);
+
+    axios.get(`${BASE_URL}/aircraft/${lat}/${lng}`)
+    .then(response => {
+      this.setState({
+        aircraft: response.data
+      });
     })
     .catch(console.warn);
   }
 
   render() {
 
-    const {lat, lng} = this.state;
+    const { weather, aircraft } = this.state;
 
     return (
       <div className="App">
-        <form onSubmit={this.handleSubmit}>
-          <div>
-            <label>Latitude:</label>
-            <input
-              type="text"
-              name="lat"
-              value={lat}
-              onChange={this.handleChange}
-            />
-          </div>
+        <h1>Birdi Code Challenge</h1>
 
-          <div>
-            <label>Longitude:</label>
-            <input
-              type="text"
-              name="lng"
-              value={lng}
-              onChange={this.handleChange}
-            />
-          </div>
+        <LocationSearchForm onSubmit={this.handleSubmit} />
 
-          <input
-            type="submit"
-            value="Submit"
-          />
-        </form>
+        <WeatherDetails weather={weather} />
+
+        <AircraftDetails aircraft={aircraft} />
       </div>
     );
   }
